@@ -84,22 +84,24 @@ function validateLevel2(
   const type = item['@type'];
 
   if (!context) {
-    return {
+    const err: StructuredDataValidationError = {
       index,
-      type: typeof type === 'string' ? type : undefined,
       level: 2,
       message: `JSON-LD at index ${index} is missing @context. Expected "https://schema.org"`,
     };
+    if (typeof type === 'string') err.type = type;
+    return err;
   }
 
   const contextStr = String(context);
   if (!contextStr.includes('schema.org')) {
-    return {
+    const err: StructuredDataValidationError = {
       index,
-      type: typeof type === 'string' ? type : undefined,
       level: 2,
       message: `JSON-LD at index ${index} has invalid @context "${contextStr}". Expected "https://schema.org"`,
     };
+    if (typeof type === 'string') err.type = type;
+    return err;
   }
 
   if (!type) {

@@ -11,14 +11,20 @@ async function applyWaitFor(page: Page, waitFor: WaitForStrategy): Promise<void>
       await page.waitForSelector(waitFor.selector, { state: 'attached' });
       break;
     case 'title':
-      await page.waitForFunction(
-        (value: string | RegExp) => {
-          const title = document.title;
-          if (value instanceof RegExp) return value.test(title);
-          return title === value;
-        },
-        waitFor.value
-      );
+      if (waitFor.value instanceof RegExp) {
+        const pattern = waitFor.value.source;
+        const flags = waitFor.value.flags;
+        await page.waitForFunction(
+          ([p, f]: [string, string]) => new RegExp(p, f).test(document.title),
+          [pattern, flags] as [string, string]
+        );
+      } else {
+        const expected = waitFor.value;
+        await page.waitForFunction(
+          (v: string) => document.title === v,
+          expected
+        );
+      }
       break;
     case 'networkidle':
       await page.waitForLoadState('networkidle');

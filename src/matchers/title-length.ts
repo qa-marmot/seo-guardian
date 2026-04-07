@@ -9,10 +9,11 @@ export async function toHaveSeoTitle(
   const url = page.url();
   const html = await page.content();
 
-  const result = checkTitleLength(
-    { html, url, context: 'rendered' },
-    { min: options.minLength, max: options.maxLength }
-  );
+  const opts: { min?: number; max?: number } = {};
+  if (options.minLength !== undefined) opts.min = options.minLength;
+  if (options.maxLength !== undefined) opts.max = options.maxLength;
+
+  const result = checkTitleLength({ html, url, context: 'rendered' }, opts);
 
   const pass = result.status === 'pass';
 

@@ -38,7 +38,9 @@ export async function runFastMode(
   const pagePath = new URL(url, config.baseUrl).pathname;
   const rules = resolvePageRules(resolved, pagePath);
 
-  const input: RuleInput = { html, url, context: 'static', responseHeaders };
+  const input: RuleInput = responseHeaders
+    ? { html, url, context: 'static', responseHeaders }
+    : { html, url, context: 'static' };
   const results: TestResult[] = [];
 
   // title-length
