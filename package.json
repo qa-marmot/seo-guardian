@@ -1,0 +1,39 @@
+{
+  "name": "@seo-guardian/core",
+  "version": "0.1.0",
+  "description": "SEO quality gate for CI/CD pipelines — stop bad deploys before they go live.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "seo-test": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "playwright test",
+    "test:unit": "playwright test tests/unit",
+    "test:e2e": "playwright test tests/e2e",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": ["seo", "testing", "playwright", "ci", "quality-gate"],
+  "author": "QAmamomamo",
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "cac": "^6.7.14",
+    "cheerio": "^1.0.0",
+    "picocolors": "^1.1.1",
+    "schema-dts": "^1.1.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*"
+  ]
+}
