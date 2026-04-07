@@ -7,9 +7,6 @@ import { checkCanonical } from '../rules/canonical.js';
 import { checkNoindex } from '../rules/noindex.js';
 import { checkOgRequired } from '../rules/og-required.js';
 import { checkImgAlt } from '../rules/img-alt.js';
-import { checkStructuredData } from '../rules/structured-data.js';
-import { checkHreflang } from '../rules/hreflang.js';
-import { checkXRobotsTag } from '../rules/x-robots-tag.js';
 import { resolveConfig, resolvePageRules } from '../config.js';
 
 type RuleSeverityShorthand = 'error' | 'warning' | 'info' | 'off';
@@ -94,23 +91,6 @@ export async function runFastMode(
   // img-alt
   if (!isOff(rules['img-alt'])) {
     results.push(checkImgAlt(input));
-  }
-
-  // structured-data (v1.1)
-  const sdRule = rules['structured-data'];
-  if (!isOff(sdRule)) {
-    const opts = typeof sdRule === 'object' ? sdRule : {};
-    results.push(checkStructuredData(input, opts as { required?: string[] }));
-  }
-
-  // hreflang (v1.1)
-  if (!isOff(rules['hreflang'])) {
-    results.push(checkHreflang(input));
-  }
-
-  // x-robots-tag (v1.1) — uses responseHeaders from input
-  if (!isOff(rules['x-robots-tag'])) {
-    results.push(checkXRobotsTag(input));
   }
 
   return results;
