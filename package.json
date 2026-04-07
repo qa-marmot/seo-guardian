@@ -4,6 +4,12 @@
   "description": "SEO quality gate for CI/CD pipelines — stop bad deploys before they go live.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "bin": {
     "seo-test": "dist/cli/index.js"
   },
@@ -12,11 +18,38 @@
     "test": "playwright test",
     "test:unit": "playwright test tests/unit",
     "test:e2e": "playwright test tests/e2e",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run lint && npm run build"
   },
-  "keywords": ["seo", "testing", "playwright", "ci", "quality-gate"],
+  "keywords": [
+    "seo",
+    "testing",
+    "playwright",
+    "ci",
+    "cd",
+    "quality-gate",
+    "seo-testing",
+    "seo-ci",
+    "playwright-matchers",
+    "lighthouse-alternative",
+    "noindex",
+    "structured-data",
+    "og-tags",
+    "broken-links"
+  ],
   "author": "QAmamomamo",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qa-marmot/seo-guardian.git"
+  },
+  "homepage": "https://github.com/qa-marmot/seo-guardian#readme",
+  "bugs": {
+    "url": "https://github.com/qa-marmot/seo-guardian/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "ajv": "^8.17.1",
     "cac": "^6.7.14",
@@ -32,8 +65,16 @@
   "peerDependencies": {
     "@playwright/test": ">=1.40.0"
   },
+  "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    }
+  },
   "files": [
     "dist",
-    "!dist/**/*.test.*"
+    "!dist/**/*.test.*",
+    "README.md",
+    "README.ja.md",
+    "LICENSE"
   ]
 }

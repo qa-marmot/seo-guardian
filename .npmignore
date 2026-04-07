@@ -1,0 +1,17 @@
+# Source
+src/
+
+# Tests
+tests/
+test-results/
+playwright-report/
+playwright.config.ts
+
+# Config
+tsconfig.json
+.github/
+.claude/
+
+# Dev
+*.log
+.DS_Store
