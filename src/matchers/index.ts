@@ -7,6 +7,7 @@ import { toHaveCanonical } from './canonical.js';
 import { toHaveNoNoindex } from './noindex.js';
 import { toHaveRequiredOgTags } from './og-required.js';
 import { toHaveValidImgAlts } from './img-alt.js';
+import { toHaveValidStructuredData } from './structured-data.js';
 
 // Matcher option types
 export type SeoTitleOptions = {
@@ -80,6 +81,9 @@ export function extendExpect(expect: Expect): void {
     },
     async toHaveValidImgAlts(page: Page) {
       return toHaveValidImgAlts(page);
+    },
+    async toHaveValidStructuredData(page: Page, options?: SeoStructuredDataOptions) {
+      return toHaveValidStructuredData(page, options);
     },
   });
 }
