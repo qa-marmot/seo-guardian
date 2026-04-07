@@ -14,6 +14,8 @@ export { checkImgAlt } from './rules/img-alt.js';
 export { checkStructuredData } from './rules/structured-data.js';
 export { checkHreflang } from './rules/hreflang.js';
 export { checkXRobotsTag } from './rules/x-robots-tag.js';
+export { checkBrokenLinks } from './rules/broken-links.js';
+export { checkRedirectChain } from './rules/redirect-chain.js';
 
 // Engine
 export { runFastMode, fetchAndAnalyze } from './engine/fast-mode.js';
