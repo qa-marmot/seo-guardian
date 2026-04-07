@@ -1,51 +1,44 @@
-# seo-guardian 🛡️
+# seo-guardian
 
-> SEO quality gate for CI/CD pipelines — stop bad deploys before they go live.
+> **SEO quality gate for CI/CD pipelines — stop bad deploys before they go live.**
 
-**seo-guardian** は、SEO品質をコードで管理し、CI/CDパイプラインに組み込むための自動テストフレームワークです。  
-石川県の制作チーム「[つくるところweb](https://tsukurutokoro.web)」が現場の課題から開発しました。
+[![npm version](https://badge.fury.io/js/@seo-guardian%2Fcore.svg)](https://www.npmjs.com/package/@seo-guardian/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Lighthouseのような「診断ツール」とは役割が異なります。
+**seo-guardian** enforces SEO requirements as automated tests that run in your CI/CD pipeline — blocking deploys the moment an SEO rule is violated.
 
-| ツール | 役割 |
-|---|---|
-| Lighthouse / Search Console | 診断・可視化（健康診断） |
-| **seo-guardian** | **デプロイ可否の判定（ガードレール）** |
-
-SEOルール違反があれば **CIを失敗させ、デプロイを止めます。**
+[日本語ドキュメントはこちら](./README.ja.md)
 
 ---
 
-## 特徴
+## Why seo-guardian, not Lighthouse CI?
 
-- **Fail Fast** — SEOルール違反を即座に検知してデプロイをブロック
-- **ハイブリッド実行** — 高速な静的解析（Fast Mode）と、SPAに対応したブラウザレンダリング（Full Mode）を使い分け
-- **ルール単位のマッチャー** — `expect.soft` と組み合わせて全チェックを網羅
-- **柔軟な設定** — `seo.config.ts` でルールのon/off・globパターンによるページ別オーバーライドが可能
-- **CIフレンドリーなレポート** — JUnit XML / JSON / Terminal Table に対応
+| Feature | Lighthouse CI | **seo-guardian** |
+|---|---|---|
+| Fail deploys on SEO violations | Score threshold only | **Per-rule severity (`error`/`warning`)** |
+| Page-level rule overrides | — | **Glob patterns (`/preview/**` → noindex: off)** |
+| TypeScript-typed config | JSON | **`seo.config.ts` with IDE autocomplete** |
+| Playwright matcher integration | — | **`expect.soft(page).toHaveNoNoindex()`** |
+| X-Robots-Tag header detection | — | **HTTP response header analysis** |
+| Fast static analysis (no browser) | Requires Chrome | **cheerio-based Fast Mode** |
+| SPA support | — | **Full Mode with `waitFor` strategies** |
+| Broken link checking | — | **Built-in with concurrency control** |
 
----
-
-## ドキュメント
-
-| ドキュメント | 内容 |
-|---|---|
-| [チュートリアル](./docs/tutorial.md) | 5分でセットアップ〜GitHub Actions導入まで |
-| [設定リファレンス](./docs/configuration.md) | 全12ルールのオプションと初期値 |
-| [APIリファレンス](./docs/api-reference.md) | 関数・マッチャー・型定義の完全リファレンス |
-| [設計思想](./docs/introduction.md) | なぜ「診断ツール」ではなく「ガードレール」なのか |
+Lighthouse is a diagnostic tool (health check). seo-guardian is a **guardrail** — it blocks the deploy.
 
 ---
 
-## Quick Start
-
-### インストール
+## Installation
 
 ```bash
 npm install --save-dev @seo-guardian/core @playwright/test
 ```
 
-### 設定ファイル（`seo.config.ts`）
+---
+
+## Quick Start
+
+### 1. Create `seo.config.ts`
 
 ```typescript
 import { defineSeoConfig } from '@seo-guardian/core';
@@ -66,7 +59,7 @@ export default defineSeoConfig({
   },
 
   pages: [
-    // SPAはブラウザ描画後に検証（Full Mode）
+    // SPA: validate after browser rendering
     {
       path: '/',
       mode: 'full',
@@ -75,7 +68,7 @@ export default defineSeoConfig({
         'structured-data': { required: ['WebSite', 'Organization'] },
       },
     },
-    // プレビューページは noindex を意図的に許可
+    // Preview pages: intentionally allow noindex
     {
       path: '/preview/**',
       rules: { 'noindex': 'off' },
@@ -84,7 +77,7 @@ export default defineSeoConfig({
 });
 ```
 
-### Playwright マッチャーで使う
+### 2. Use Playwright matchers
 
 ```typescript
 import { test, expect } from '@playwright/test';
@@ -92,7 +85,7 @@ import { extendExpect } from '@seo-guardian/core';
 
 extendExpect(expect);
 
-test('トップページ SEO検証', async ({ page }) => {
+test('Homepage SEO', async ({ page }) => {
   await page.goto('/');
   await expect.soft(page).toHaveSeoTitle({ minLength: 30, maxLength: 60 });
   await expect.soft(page).toHaveSeoDescription({ minLength: 70, maxLength: 160 });
@@ -106,65 +99,29 @@ test('トップページ SEO検証', async ({ page }) => {
 });
 ```
 
-### CLIで実行
+> **Why `expect.soft`?** It continues after failures, so one test run surfaces all SEO issues at once.
+
+### 3. Run via CLI
 
 ```bash
-# ターミナル出力（デフォルト）
+# Terminal output (default)
 npx seo-test --config seo.config.ts
 
-# JUnit XML形式で出力（CI向け）
+# JUnit XML for CI
 npx seo-test --config seo.config.ts --reporter junit --output test-results/seo.xml
 
-# 単一URLをテスト
+# Test a single URL
 npx seo-test --url https://example.com/
 
-# 本番環境に向けて実行
+# Point at production
 npx seo-test --config seo.config.ts --base-url https://example.com
 ```
 
----
-
-## Playwrightマッチャー一覧
-
-| マッチャー | 検証内容 |
-|---|---|
-| `toHaveSeoTitle(opts?)` | `<title>` の存在と文字数（デフォルト 30〜60文字） |
-| `toHaveSeoDescription(opts?)` | `<meta name="description">` の存在と文字数（デフォルト 70〜160文字） |
-| `toHaveSingleH1()` | `<h1>` がページに1つだけ存在するか |
-| `toHaveCanonical(url?)` | canonical リンクの存在と値 |
-| `toHaveNoNoindex()` | noindex ディレクティブの不在（meta タグ検出） |
-| `toHaveLangAttribute()` | `<html lang="">` 属性の存在 |
-| `toHaveRequiredOgTags(opts?)` | OGP必須タグ（og:title / og:description / og:url / og:image）の存在 |
-| `toHaveValidImgAlts()` | 全 `<img>` の alt 属性の妥当性（missing・filename-only を検出） |
-| `toHaveValidStructuredData(opts?)` | JSON-LD の構文・@context/@type・型別推奨フィールドを3段階で検証 |
-| `toHaveNoInternalBrokenLinks(opts?)` | 内部リンク切れの確認（ネットワークアクセスあり） |
+Any rule with `severity: 'error'` that fails causes **exit code 1**, blocking the deploy.
 
 ---
 
-## ルール一覧
-
-| ルール | デフォルト重大度 | 説明 |
-|---|---|---|
-| `title-length` | error | `<title>` の存在と文字数 |
-| `description-length` | error | `<meta name="description">` の存在と文字数 |
-| `h1-single` | error | `<h1>` がページに1つだけ存在するか |
-| `canonical` | error | `<link rel="canonical">` の存在 |
-| `noindex` | error | noindex ディレクティブの不在 |
-| `lang` | error | `<html lang="">` 属性の存在 |
-| `og-required` | error | OGP必須タグの存在 |
-| `img-alt` | error | `<img>` の alt 属性の妥当性 |
-| `structured-data` | warning | JSON-LDの3段階バリデーション |
-| `hreflang` | off | hreflangアノテーションの整合性 |
-| `robots-txt` | warning | robots.txtの存在と意図しないブロック検出 |
-| `x-robots-tag` | warning | HTTPレスポンスヘッダーの X-Robots-Tag 検出 |
-| `broken-links` | warning | リンク切れチェック（内部・外部を選択可） |
-| `redirect-chain` | warning | リダイレクトチェーンの長さとループ検出 |
-
-重大度が `error` のルールが `fail` になると、CLIは exit code 1 で終了しデプロイをブロックします。
-
----
-
-## CI/CD 統合（GitHub Actions）
+## GitHub Actions
 
 ```yaml
 - name: SEO Tests
@@ -184,15 +141,115 @@ npx seo-test --config seo.config.ts --base-url https://example.com
     path: test-results/seo.xml
 ```
 
-完全なワークフロー例は [チュートリアル](./docs/tutorial.md#6-github-actions-に組み込む) を参照してください。
+---
+
+## Playwright Matchers
+
+| Matcher | What it checks |
+|---|---|
+| `toHaveSeoTitle(opts?)` | `<title>` existence and length (default 30–60 chars) |
+| `toHaveSeoDescription(opts?)` | `<meta name="description">` existence and length (default 70–160 chars) |
+| `toHaveSingleH1()` | Exactly one `<h1>` on the page |
+| `toHaveCanonical(url?)` | `<link rel="canonical">` existence and optional value match |
+| `toHaveNoNoindex()` | No noindex directive in meta tags |
+| `toHaveLangAttribute()` | `<html lang="">` attribute present and non-empty |
+| `toHaveRequiredOgTags(opts?)` | OG required tags: og:title / og:description / og:url / og:image |
+| `toHaveValidImgAlts()` | All `<img>` have valid alt attributes (missing and filename-only detected) |
+| `toHaveValidStructuredData(opts?)` | JSON-LD syntax, @context/@type, type-specific recommended fields |
+| `toHaveNoInternalBrokenLinks(opts?)` | All internal links return non-4xx/5xx status |
 
 ---
 
-## 実装状況
+## Rules
 
-| フェーズ | ルール | ユニットテスト |
+| Rule | Default Severity | Description |
 |---|---|---|
-| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | 98件 |
-| v1.1 | structured-data（3段階）, hreflang, robots-txt, x-robots-tag | 51件 |
-| v1.2 | broken-links, redirect-chain | 26件 |
-| **合計** | **12ルール / 14設定キー** | **175件（全通過）** |
+| `title-length` | error | `<title>` existence and length |
+| `description-length` | error | `<meta name="description">` existence and length |
+| `h1-single` | error | Exactly one `<h1>` per page |
+| `canonical` | error | `<link rel="canonical">` presence |
+| `noindex` | error | No noindex directive |
+| `lang` | error | `<html lang="">` attribute |
+| `og-required` | error | Required OGP tags |
+| `img-alt` | error | Valid `alt` attributes on all `<img>` |
+| `structured-data` | warning | 3-level JSON-LD validation |
+| `hreflang` | off | hreflang annotation consistency |
+| `robots-txt` | warning | robots.txt existence and unintended blocking |
+| `x-robots-tag` | warning | X-Robots-Tag HTTP response header |
+| `broken-links` | warning | Broken link detection (internal/external) |
+| `redirect-chain` | warning | Redirect chain length and loop detection |
+
+Rules with `severity: 'error'` that reach `status: 'fail'` cause CLI to exit with code 1.
+
+---
+
+## Fast Mode vs Full Mode
+
+|  | Fast Mode (default) | Full Mode |
+|---|---|---|
+| Engine | HTTP fetch + cheerio | Playwright browser |
+| Speed | Fast (no browser) | Slower (browser startup) |
+| Best for | SSR / static sites | SPA / CSR / hydrated DOM |
+| Config | default | `mode: 'full'` per page |
+
+```typescript
+pages: [
+  // Wait for hydration before validating
+  {
+    path: '/app',
+    mode: 'full',
+    waitFor: { type: 'networkidle' },
+  },
+]
+```
+
+---
+
+## Page-Level Rule Overrides
+
+```typescript
+pages: [
+  // Blog posts require Article structured data
+  {
+    path: '/blog/**',
+    rules: {
+      'structured-data': { required: ['Article'] },
+    },
+  },
+  // Preview pages: noindex is intentional
+  {
+    path: '/preview/**',
+    rules: { 'noindex': 'off' },
+  },
+]
+```
+
+Priority: **page rules > global rules > defaults**
+
+---
+
+## Implementation Status
+
+| Phase | Rules | Unit Tests |
+|---|---|---|
+| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | 98 |
+| v1.1 | structured-data (3-level), hreflang, robots-txt, x-robots-tag | 51 |
+| v1.2 | broken-links, redirect-chain | 26 |
+| **Total** | **12 rules / 14 config keys** | **175 (all passing)** |
+
+---
+
+## Documentation
+
+| Document | Contents |
+|---|---|
+| [Tutorial](./docs/tutorial.md) | From setup to GitHub Actions in 5 minutes (Japanese) |
+| [Configuration Reference](./docs/configuration.md) | All 12 rules with options and defaults (Japanese) |
+| [API Reference](./docs/api-reference.md) | Functions, matchers, and type definitions (Japanese) |
+| [Design Philosophy](./docs/introduction.md) | Why a guardrail, not a diagnostic tool (Japanese) |
+
+---
+
+## License
+
+MIT © [QAmamomamo](https://github.com/qa-marmot)
