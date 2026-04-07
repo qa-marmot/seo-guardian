@@ -1,5 +1,12 @@
 import type { Expect, Page } from '@playwright/test';
 import { toHaveSeoTitle } from './title-length.js';
+import { toHaveSeoDescription } from './description-length.js';
+import { toHaveSingleH1 } from './h1-single.js';
+import { toHaveLangAttribute } from './lang.js';
+import { toHaveCanonical } from './canonical.js';
+import { toHaveNoNoindex } from './noindex.js';
+import { toHaveRequiredOgTags } from './og-required.js';
+import { toHaveValidImgAlts } from './img-alt.js';
 
 // Matcher option types
 export type SeoTitleOptions = {
@@ -52,6 +59,27 @@ export function extendExpect(expect: Expect): void {
   expect.extend({
     async toHaveSeoTitle(page: Page, options?: SeoTitleOptions) {
       return toHaveSeoTitle(page, options);
+    },
+    async toHaveSeoDescription(page: Page, options?: SeoDescriptionOptions) {
+      return toHaveSeoDescription(page, options);
+    },
+    async toHaveSingleH1(page: Page) {
+      return toHaveSingleH1(page);
+    },
+    async toHaveLangAttribute(page: Page) {
+      return toHaveLangAttribute(page);
+    },
+    async toHaveCanonical(page: Page, url?: string) {
+      return toHaveCanonical(page, url);
+    },
+    async toHaveNoNoindex(page: Page) {
+      return toHaveNoNoindex(page);
+    },
+    async toHaveRequiredOgTags(page: Page, options?: SeoOgTagsOptions) {
+      return toHaveRequiredOgTags(page, options);
+    },
+    async toHaveValidImgAlts(page: Page) {
+      return toHaveValidImgAlts(page);
     },
   });
 }
