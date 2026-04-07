@@ -8,6 +8,10 @@ import { toHaveNoNoindex } from './noindex.js';
 import { toHaveRequiredOgTags } from './og-required.js';
 import { toHaveValidImgAlts } from './img-alt.js';
 import { toHaveValidStructuredData } from './structured-data.js';
+import { toHaveNoInternalBrokenLinks } from './broken-links.js';
+import type { LinkCheckOptions } from '../rules/broken-links.js';
+
+export type { LinkCheckOptions };
 
 // Matcher option types
 export type SeoTitleOptions = {
@@ -43,6 +47,7 @@ declare global {
       toHaveRequiredOgTags(options?: SeoOgTagsOptions): Promise<R>;
       toHaveValidImgAlts(): Promise<R>;
       toHaveValidStructuredData(options?: SeoStructuredDataOptions): Promise<R>;
+      toHaveNoInternalBrokenLinks(options?: LinkCheckOptions): Promise<R>;
     }
   }
 }
@@ -84,6 +89,9 @@ export function extendExpect(expect: Expect): void {
     },
     async toHaveValidStructuredData(page: Page, options?: SeoStructuredDataOptions) {
       return toHaveValidStructuredData(page, options);
+    },
+    async toHaveNoInternalBrokenLinks(page: Page, options?: LinkCheckOptions) {
+      return toHaveNoInternalBrokenLinks(page, options);
     },
   });
 }
