@@ -9,13 +9,13 @@ export async function toHaveValidStructuredData(
   const url = page.url();
   const html = await page.content();
 
+  const required: string[] = options.type
+    ? [options.type, ...(options.required ?? [])]
+    : (options.required ?? []);
+
   const result = checkStructuredData(
     { html, url, context: 'rendered' },
-    {
-      required: options.type
-        ? [options.type, ...(options.required ?? [])]
-        : options.required,
-    }
+    { required }
   );
 
   // warn counts as pass for expect() — use expect.soft() to surface warnings
