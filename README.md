@@ -241,12 +241,12 @@ Priority: **page rules > global rules > defaults**
 
 ## Documentation
 
-| Document | Contents |
-|---|---|
-| [Tutorial](./docs/tutorial.md) | From setup to GitHub Actions in 5 minutes (Japanese) |
-| [Configuration Reference](./docs/configuration.md) | All 12 rules with options and defaults (Japanese) |
-| [API Reference](./docs/api-reference.md) | Functions, matchers, and type definitions (Japanese) |
-| [Design Philosophy](./docs/introduction.md) | Why a guardrail, not a diagnostic tool (Japanese) |
+| Document | English | Japanese |
+|---|---|---|
+| Tutorial | [tutorial.en.md](./docs/tutorial.en.md) | [tutorial.md](./docs/tutorial.md) |
+| Configuration Reference | [configuration.en.md](./docs/configuration.en.md) | [configuration.md](./docs/configuration.md) |
+| API Reference | [api-reference.en.md](./docs/api-reference.en.md) | [api-reference.md](./docs/api-reference.md) |
+| Design Philosophy | [introduction.en.md](./docs/introduction.en.md) | [introduction.md](./docs/introduction.md) |
 
 ---
 
