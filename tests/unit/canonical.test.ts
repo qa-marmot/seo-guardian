@@ -52,7 +52,7 @@ test.describe('canonical rule', () => {
       { expectedUrl: 'https://example.com/other' }
     );
     expect(result.status).toBe('fail');
-    expect(result.message).toContain('does not match');
+    expect(result.message).toContain('mismatch');
     expect(result.message).toContain('https://example.com/page');
     expect(result.message).toContain('https://example.com/other');
   });
