@@ -69,7 +69,7 @@ export function checkImgAlt(input: RuleInput): ImgAltResult {
       actual: allImages,
       expected: { allPresent: true },
       selector: 'img',
-      message: `Found ${violations.length} img alt issue(s):\n${details.map((d) => `  - ${d}`).join('\n')}`,
+      message: `Found ${violations.length} img alt issue(s) out of ${allImages.length} total image(s):\n${details.map((d) => `  - ${d}`).join('\n')}\nFix:\n  - Missing alt: add alt="description of image" (or alt="" for decorative images)\n  - Filename alt: replace with a descriptive phrase (e.g., alt="Team photo at product launch")`,
       context: input.context,
       url: input.url,
       duration: Date.now() - start,

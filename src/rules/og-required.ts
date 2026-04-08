@@ -50,7 +50,7 @@ export function checkOgRequired(
       actual: presentTags,
       expected: { required: requiredTags },
       selector: 'meta[property^="og:"]',
-      message: `Missing or empty required OGP tags: ${missingTags.map((t) => `<meta property="${t}">`).join(', ')}`,
+      message: `Missing or empty required OGP tag(s): ${missingTags.join(', ')}\nPresent: ${Object.keys(presentTags).join(', ') || 'none'}\nFix: Add the missing tags in <head>. Example:\n${missingTags.map((t) => `  <meta property="${t}" content="...">`).join('\n')}`,
       context: input.context,
       url: input.url,
       duration: Date.now() - start,
