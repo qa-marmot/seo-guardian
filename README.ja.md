@@ -3,7 +3,7 @@
 > SEO quality gate for CI/CD pipelines — stop bad deploys before they go live.
 
 **seo-guardian** は、SEO品質をコードで管理し、CI/CDパイプラインに組み込むための自動テストフレームワークです。  
-石川県の制作チーム「[つくるところweb](https://tsukurutokoro.web)」が現場の課題から開発しました。
+石川県の制作チーム「[つくるところweb](https://tsukuru-web.com)」が現場の課題から開発しました。
 
 Lighthouseのような「診断ツール」とは役割が異なります。
 
