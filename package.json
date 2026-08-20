@@ -15,9 +15,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "playwright test",
+    "test": "playwright test --project=unit --project=integration",
     "test:unit": "playwright test tests/unit",
-    "test:e2e": "playwright test tests/e2e",
+    "test:integration": "playwright test tests/integration",
     "lint": "tsc --noEmit",
     "prepublishOnly": "npm run lint && npm run build"
   },
@@ -79,3 +79,4 @@
     "LICENSE"
   ]
 }
+
