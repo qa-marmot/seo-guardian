@@ -1,4 +1,4 @@
-import type { SeoConfig } from './types.js';
+import type { PageConfig, SeoConfig } from './types.js';
 
 /**
  * Define and validate an SEO test configuration.
@@ -19,6 +19,7 @@ const DEFAULT_RULES: SeoConfig['rules'] = {
   'robots-txt': 'warning',
   'x-robots-tag': 'warning',
   'broken-links': 'warning',
+  'redirect-chain': 'warning',
   'structured-data': 'warning',
   'h1-single': 'error',
   'lang': 'error',
@@ -37,9 +38,21 @@ export function resolvePageRules(
   config: Required<SeoConfig>,
   pagePath: string
 ): Required<SeoConfig>['rules'] {
-  const pageConfig = config.pages.find((p) => matchesPath(p.path, pagePath));
+  const pageConfig = resolvePageConfig(config, pagePath);
   if (!pageConfig?.rules) return config.rules;
   return { ...config.rules, ...pageConfig.rules };
+}
+
+/**
+ * Returns the first page configuration that applies to the given path.
+ * Page rules, execution mode, and wait strategy must all come from the same
+ * matching entry so CLI execution matches the documented override behavior.
+ */
+export function resolvePageConfig(
+  config: Pick<SeoConfig, 'pages'>,
+  pagePath: string
+): PageConfig | undefined {
+  return config.pages?.find((page) => matchesPath(page.path, pagePath));
 }
 
 function matchesPath(pattern: string, path: string): boolean {

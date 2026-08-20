@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  unit-tests:
-    name: Unit Tests
+  tests:
+    name: Unit & Integration Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +24,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run unit tests
-        run: npx playwright test tests/unit --project=unit --reporter=list,junit
+      - name: Run unit and CLI integration tests
+        run: npx playwright test --project=unit --project=integration --reporter=list,junit
         env:
           CI: true
 

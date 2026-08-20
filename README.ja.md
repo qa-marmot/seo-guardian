@@ -31,7 +31,7 @@ SEOルール違反があれば **CIを失敗させ、デプロイを止めます
 | ドキュメント | 内容 |
 |---|---|
 | [チュートリアル](./docs/tutorial.md) | 5分でセットアップ〜GitHub Actions導入まで |
-| [設定リファレンス](./docs/configuration.md) | 全12ルールのオプションと初期値 |
+| [設定リファレンス](./docs/configuration.md) | 全14ルールのオプションと初期値 |
 | [APIリファレンス](./docs/api-reference.md) | 関数・マッチャー・型定義の完全リファレンス |
 | [設計思想](./docs/introduction.md) | なぜ「診断ツール」ではなく「ガードレール」なのか |
 
@@ -190,9 +190,9 @@ npx seo-test --config seo.config.ts --base-url https://example.com
 
 ## 実装状況
 
-| フェーズ | ルール | ユニットテスト |
+| フェーズ | ルール | カバレッジ |
 |---|---|---|
-| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | 98件 |
-| v1.1 | structured-data（3段階）, hreflang, robots-txt, x-robots-tag | 51件 |
-| v1.2 | broken-links, redirect-chain | 26件 |
-| **合計** | **12ルール / 14設定キー** | **175件（全通過）** |
+| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | ルール単体テスト |
+| v1.1 | structured-data（3段階）, hreflang, robots-txt, x-robots-tag | ルール単体テスト |
+| v1.2 | broken-links, redirect-chain | ルール単体テスト |
+| **合計** | **設定・エンジン登録済みの14ルール** | **ユニットテストと CLI 設定 → engine → reporter → exit code の統合テスト** |

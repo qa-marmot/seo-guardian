@@ -50,7 +50,7 @@ export async function runFullMode(
   config: SeoConfig,
   options: FullModeOptions = {}
 ): Promise<TestResult[]> {
-  await page.goto(url, {
+  const response = await page.goto(url, {
     waitUntil: 'domcontentloaded',
     timeout: options.timeout ?? 30000,
   });
@@ -60,10 +60,9 @@ export async function runFullMode(
   }
 
   const html = await page.content();
+  const responseHeaders = response ? await response.allHeaders() : undefined;
 
-  // Capture response headers via route interception is complex in this context;
-  // we run fast mode rules on the rendered HTML instead
-  return runFastMode(html, url, config, undefined);
+  return runFastMode(html, url, config, undefined, responseHeaders);
 }
 
 /**

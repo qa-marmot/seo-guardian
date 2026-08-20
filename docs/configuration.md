@@ -118,11 +118,13 @@ rules: {
 
 ```typescript
 'canonical': 'error'
+// または期待URLも検証
+'canonical': { expectedUrl: 'https://example.com/about', severity: 'error' }
 ```
 
 - タグが存在しない → `fail`
 - `href` が空 → `fail`
-- ページ設定で `expectedUrl` を指定すると値の一致も検証
+- グローバルまたはページ別のルール設定で `expectedUrl` を指定すると値の一致も検証
 
 ---
 
@@ -293,10 +295,9 @@ HTMLの `<meta name="robots">` とは独立して動作します。CDN・プロ�
 'broken-links': 'warning'  // デフォルト warning（無効ではない）
 // または詳細設定
 'broken-links': {
-  scope: 'internal',           // 'internal' | 'external' | 'all'
-  severity: 'error',
-  externalScope: 'warning',
-  timeout: 5000,               // ms
+   scope: 'internal',           // 'internal' | 'external' | 'all'
+   severity: 'error',
+   timeout: 5000,               // ms
   maxConcurrency: 5,           // 並列リクエスト数
   ignorePatterns: [/\/api\//], // 除外パターン
   userAgent: 'my-bot/1.0',
@@ -317,6 +318,33 @@ HTMLの `<meta name="robots">` とは独立して動作します。CDN・プロ�
 - 内部リンク切れ → `fail`
 - 外部リンク切れ（scope が `'internal'` の場合） → チェックしない
 - 外部リンク切れ（scope が `'external'` / `'all'` の場合） → `fail`
+
+---
+
+#### `redirect-chain`
+
+リダイレクトチェーンとループを検出します（ネットワークアクセスあり）。
+
+```typescript
+'redirect-chain': 'warning'
+// または詳細設定
+'redirect-chain': {
+  maxChainLength: 3,
+  severity: 'warning',
+  timeout: 10000,
+}
+```
+
+- `maxChainLength`（デフォルト: 3）を超えるチェーン → `fail`
+- リダイレクトループ → `fail`
+- HTTP → HTTPS リダイレクト → `warn`
+
+| オプション | 型 | デフォルト | 説明 |
+|---|---|---|---|
+| `maxChainLength` | `number` | `3` | 許容するリダイレクトホップ数 |
+| `timeout` | `number` | `10000` | リクエストタイムアウト（ms） |
+| `userAgent` | `string` | `'seo-guardian/0.1'` | User-Agent ヘッダー |
+| `severity` | `Severity` | `'warning'` | engine が適用する重大度 |
 
 ---
 
@@ -408,6 +436,11 @@ discovery: {
 }
 ```
 
+同一オリジンの静的HTML内リンクを幅優先でたどり、`startUrl` 自身も結果へ含めます。
+`limit` は取得するドキュメント数の上限です（デフォルト: 100）。外部リンク、フラグメント、
+HTML以外のレスポンスは対象外で、認証やJavaScript実行は行いません。レンダリング後の内容を
+検証するページには Full Mode を指定してください。
+
 ---
 
 ## 全デフォルト値一覧
@@ -428,6 +461,7 @@ const DEFAULT_RULES = {
   'robots-txt':         'warning',
   'x-robots-tag':       'warning',
   'broken-links':       'warning',
+  'redirect-chain':     'warning',
 };
 ```
 

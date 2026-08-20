@@ -27,5 +27,10 @@ export default defineConfig({
         baseURL: process.env['BASE_URL'] ?? 'http://localhost:3000',
       },
     },
+    {
+      name: 'integration',
+      testDir: './tests/integration',
+      testMatch: '**/*.spec.ts',
+    },
   ],
 });

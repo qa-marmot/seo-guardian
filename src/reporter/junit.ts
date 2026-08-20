@@ -17,7 +17,7 @@ function resultToTestCase(result: TestResult, url: string): string {
   const classname = escapeXml(result.ruleId);
   const time = ((result.duration ?? 0) / 1000).toFixed(3);
 
-  if (result.status === 'fail') {
+  if (result.status === 'fail' && result.severity === 'error') {
     const message = escapeXml(result.message);
     const details = escapeXml(
       [
@@ -35,7 +35,7 @@ function resultToTestCase(result: TestResult, url: string): string {
     </testcase>`;
   }
 
-  if (result.status === 'warn') {
+  if (result.status !== 'pass') {
     const message = escapeXml(result.message);
     return `    <testcase name="${name}" classname="${classname}" time="${time}">
       <system-out>${message}</system-out>

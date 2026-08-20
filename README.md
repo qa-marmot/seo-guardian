@@ -230,12 +230,12 @@ Priority: **page rules > global rules > defaults**
 
 ## Implementation Status
 
-| Phase | Rules | Unit Tests |
+| Phase | Rules | Coverage |
 |---|---|---|
-| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | 98 |
-| v1.1 | structured-data (3-level), hreflang, robots-txt, x-robots-tag | 51 |
-| v1.2 | broken-links, redirect-chain | 26 |
-| **Total** | **12 rules / 14 config keys** | **175 (all passing)** |
+| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | Rule unit tests |
+| v1.1 | structured-data (3-level), hreflang, robots-txt, x-robots-tag | Rule unit tests |
+| v1.2 | broken-links, redirect-chain | Rule unit tests |
+| **Total** | **14 configured and engine-registered rules** | **Unit tests plus CLI config → engine → reporter → exit-code integration coverage** |
 
 ---
 
