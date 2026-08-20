@@ -5,7 +5,7 @@
 [![npm version](https://badge.fury.io/js/@seo-guardian%2Fcore.svg)](https://www.npmjs.com/package/@seo-guardian/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**seo-guardian** enforces SEO requirements as automated tests that run in your CI/CD pipeline — blocking deploys the moment an SEO rule is violated.
+**seo-guardian** enforces SEO requirements as automated tests that run in your CI/CD pipeline. Rules configured with `severity: 'error'` block deployment when they fail; `warning` and `info` keep results report-only.
 
 [日本語ドキュメントはこちら](./README.ja.md)
 
@@ -24,7 +24,7 @@
 | SPA support | — | **Full Mode with `waitFor` strategies** |
 | Broken link checking | — | **Built-in with concurrency control** |
 
-Lighthouse is a diagnostic tool (health check). seo-guardian is a **guardrail** — it blocks the deploy.
+Lighthouse is a diagnostic tool (health check). seo-guardian is a **guardrail** — error-severity violations block the deploy.
 
 ---
 
@@ -253,3 +253,4 @@ Priority: **page rules > global rules > defaults**
 ## License
 
 MIT © [QAmamomamo](https://github.com/qa-marmot)
+
