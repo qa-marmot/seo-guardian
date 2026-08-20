@@ -52,3 +52,7 @@ jobs:
 
       - name: Type check
         run: npm run lint
+
+      - name: Build package
+        run: npm run build
+
