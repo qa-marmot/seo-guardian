@@ -12,13 +12,13 @@ Lighthouseのような「診断ツール」とは役割が異なります。
 | Lighthouse / Search Console | 診断・可視化（健康診断） |
 | **seo-guardian** | **デプロイ可否の判定（ガードレール）** |
 
-SEOルール違反があれば **CIを失敗させ、デプロイを止めます。**
+`severity: 'error'` として設定したルールが失敗すると、**CIを失敗させ、デプロイを止めます。** `warning` と `info` はレポートとして残ります。
 
 ---
 
 ## 特徴
 
-- **Fail Fast** — SEOルール違反を即座に検知してデプロイをブロック
+- **Fail Fast** — `error` のSEOルール違反を即座に検知してデプロイをブロック
 - **ハイブリッド実行** — 高速な静的解析（Fast Mode）と、SPAに対応したブラウザレンダリング（Full Mode）を使い分け
 - **ルール単位のマッチャー** — `expect.soft` と組み合わせて全チェックを網羅
 - **柔軟な設定** — `seo.config.ts` でルールのon/off・globパターンによるページ別オーバーライドが可能
@@ -196,3 +196,4 @@ npx seo-test --config seo.config.ts --base-url https://example.com
 | v1.1 | structured-data（3段階）, hreflang, robots-txt, x-robots-tag | ルール単体テスト |
 | v1.2 | broken-links, redirect-chain | ルール単体テスト |
 | **合計** | **設定・エンジン登録済みの14ルール** | **ユニットテストと CLI 設定 → engine → reporter → exit code の統合テスト** |
+
