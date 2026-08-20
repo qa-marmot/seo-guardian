@@ -55,6 +55,16 @@ export async function runFullMode(
     timeout: options.timeout ?? 30000,
   });
 
+  if (!response) {
+    throw new Error(`Request failed for ${url}: no document response received.`);
+  }
+
+  if (!response.ok()) {
+    throw new Error(
+      `Request failed for ${url}: HTTP ${response.status()} ${response.statusText()}`.trim()
+    );
+  }
+
   if (options.waitFor) {
     await applyWaitFor(page, options.waitFor);
   }
@@ -88,3 +98,4 @@ export async function runFullModeAll(
 
   return results;
 }
+
