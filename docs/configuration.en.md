@@ -118,11 +118,13 @@ Validates the existence and href of `<link rel="canonical">`.
 
 ```typescript
 'canonical': 'error'
+// or validate the expected URL as well
+'canonical': { expectedUrl: 'https://example.com/about', severity: 'error' }
 ```
 
 - Tag missing → `fail`
 - Empty `href` → `fail`
-- Set `expectedUrl` in page config to also validate the value
+- Set `expectedUrl` in the global or page rule config to also validate the value
 
 ---
 
@@ -320,11 +322,24 @@ Detects redirect chains and loops (requires network access).
 
 ```typescript
 'redirect-chain': 'warning'
+// or with detailed config
+'redirect-chain': {
+  maxChainLength: 3,
+  severity: 'warning',
+  timeout: 10000,
+}
 ```
 
 - Chain longer than `maxChainLength` (default: 3) → `fail`
 - Redirect loop detected → `fail`
 - HTTP → HTTPS redirect → `warn`
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `maxChainLength` | `number` | `3` | Maximum allowed redirect hops |
+| `timeout` | `number` | `10000` | Request timeout (ms) |
+| `userAgent` | `string` | `'seo-guardian/0.1'` | User-Agent header |
+| `severity` | `Severity` | `'warning'` | Severity applied by the engine |
 
 ---
 
@@ -410,6 +425,12 @@ discovery: {
 }
 ```
 
+Crawl discovery follows same-origin links in static HTML breadth-first and
+includes `startUrl` in the result. `limit` caps the number of documents (100 by
+default). It ignores external links, fragments, and non-HTML responses; it does
+not authenticate or execute JavaScript. Use page-level Full Mode for checks
+that depend on rendered content.
+
 ---
 
 ## All Defaults
@@ -430,6 +451,7 @@ const DEFAULT_RULES = {
   'robots-txt':         'warning',
   'x-robots-tag':       'warning',
   'broken-links':       'warning',
+  'redirect-chain':     'warning',
 };
 ```
 

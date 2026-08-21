@@ -50,20 +50,29 @@ export async function runFullMode(
   config: SeoConfig,
   options: FullModeOptions = {}
 ): Promise<TestResult[]> {
-  await page.goto(url, {
+  const response = await page.goto(url, {
     waitUntil: 'domcontentloaded',
     timeout: options.timeout ?? 30000,
   });
+
+  if (!response) {
+    throw new Error(`Request failed for ${url}: no document response received.`);
+  }
+
+  if (!response.ok()) {
+    throw new Error(
+      `Request failed for ${url}: HTTP ${response.status()} ${response.statusText()}`.trim()
+    );
+  }
 
   if (options.waitFor) {
     await applyWaitFor(page, options.waitFor);
   }
 
   const html = await page.content();
+  const responseHeaders = response ? await response.allHeaders() : undefined;
 
-  // Capture response headers via route interception is complex in this context;
-  // we run fast mode rules on the rendered HTML instead
-  return runFastMode(html, url, config, undefined);
+  return runFastMode(html, url, config, undefined, responseHeaders);
 }
 
 /**
@@ -89,3 +98,4 @@ export async function runFullModeAll(
 
   return results;
 }
+

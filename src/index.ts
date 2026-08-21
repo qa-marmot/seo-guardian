@@ -1,5 +1,10 @@
 // Public API
-export { defineSeoConfig, resolveConfig, resolvePageRules } from './config.js';
+export {
+  defineSeoConfig,
+  resolveConfig,
+  resolvePageConfig,
+  resolvePageRules,
+} from './config.js';
 export { extendExpect } from './matchers/index.js';
 
 // Rule functions (for programmatic use)
@@ -13,12 +18,15 @@ export { checkOgRequired } from './rules/og-required.js';
 export { checkImgAlt } from './rules/img-alt.js';
 export { checkStructuredData } from './rules/structured-data.js';
 export { checkHreflang } from './rules/hreflang.js';
+export { checkRobotsTxt } from './rules/robots-txt.js';
 export { checkXRobotsTag } from './rules/x-robots-tag.js';
 export { checkBrokenLinks } from './rules/broken-links.js';
 export { checkRedirectChain } from './rules/redirect-chain.js';
 
 // Engine
 export { runFastMode, fetchAndAnalyze } from './engine/fast-mode.js';
+export { runFullMode, runFullModeAll } from './engine/full-mode.js';
+export type { FullModeOptions } from './engine/full-mode.js';
 
 // Type exports
 export type {
@@ -46,9 +54,11 @@ export type {
   RuleSeverityShorthand,
   TitleLengthOptions,
   DescriptionLengthOptions,
+  CanonicalOptions,
   OgRequiredOptions,
   BrokenLinksOptions,
   StructuredDataOptions,
+  RedirectChainOptions,
   RuleInput,
   RuleFunction,
 } from './types.js';

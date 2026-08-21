@@ -51,6 +51,11 @@ export type DescriptionLengthOptions = {
   severity?: Severity;
 };
 
+export type CanonicalOptions = {
+  expectedUrl?: string;
+  severity?: Severity;
+};
+
 export type OgRequiredOptions = {
   tags?: string[];
   severity?: Severity;
@@ -59,7 +64,6 @@ export type OgRequiredOptions = {
 export type BrokenLinksOptions = {
   scope?: 'internal' | 'external' | 'all';
   severity?: Severity;
-  externalScope?: RuleSeverityShorthand;
   timeout?: number;
   ignorePatterns?: RegExp[];
   maxConcurrency?: number;
@@ -71,13 +75,22 @@ export type StructuredDataOptions = {
   severity?: Severity;
 };
 
+export type RedirectChainOptions = {
+  maxChainLength?: number;
+  timeout?: number;
+  userAgent?: string;
+  severity?: Severity;
+};
+
 export type RuleConfig =
   | RuleSeverityShorthand
   | TitleLengthOptions
   | DescriptionLengthOptions
+  | CanonicalOptions
   | OgRequiredOptions
   | BrokenLinksOptions
-  | StructuredDataOptions;
+  | StructuredDataOptions
+  | RedirectChainOptions;
 
 export type WaitForStrategy =
   | { type: 'selector'; selector: string }
@@ -103,7 +116,7 @@ export type SeoRules = {
   'title-length': RuleSeverityShorthand | TitleLengthOptions;
   'description-length': RuleSeverityShorthand | DescriptionLengthOptions;
   'img-alt': RuleSeverityShorthand;
-  'canonical': RuleSeverityShorthand;
+  'canonical': RuleSeverityShorthand | CanonicalOptions;
   'noindex': RuleSeverityShorthand;
   'og-required': RuleSeverityShorthand | OgRequiredOptions;
   'hreflang': RuleSeverityShorthand;
@@ -113,6 +126,7 @@ export type SeoRules = {
   'structured-data': RuleSeverityShorthand | StructuredDataOptions;
   'h1-single': RuleSeverityShorthand;
   'lang': RuleSeverityShorthand;
+  'redirect-chain': RuleSeverityShorthand | RedirectChainOptions;
 };
 
 export type SeoConfig = {

@@ -15,9 +15,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "playwright test",
+    "test": "playwright test --project=unit --project=integration",
     "test:unit": "playwright test tests/unit",
-    "test:e2e": "playwright test tests/e2e",
+    "test:integration": "playwright test tests/integration",
     "lint": "tsc --noEmit",
     "prepublishOnly": "npm run lint && npm run build"
   },
@@ -54,6 +54,7 @@
     "ajv": "^8.17.1",
     "cac": "^6.7.14",
     "cheerio": "^1.0.0",
+    "jiti": "^2.7.0",
     "picocolors": "^1.1.1",
     "schema-dts": "^1.1.2"
   },
@@ -78,3 +79,4 @@
     "LICENSE"
   ]
 }
+

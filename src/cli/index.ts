@@ -1,16 +1,39 @@
 #!/usr/bin/env node
+import type { Browser } from '@playwright/test';
 import { cac } from 'cac';
+import { createJiti } from 'jiti';
 import pc from 'picocolors';
 import { resolve } from 'path';
-import { pathToFileURL } from 'url';
 import type { SeoConfig, TestResult } from '../types.js';
-import { resolveConfig } from '../config.js';
+import { resolveConfig, resolvePageConfig } from '../config.js';
 import { discoverUrls } from '../engine/discovery.js';
 import { fetchAndAnalyze } from '../engine/fast-mode.js';
+import { runFullMode } from '../engine/full-mode.js';
 import { buildSummary } from '../reporter/types.js';
 import { printTerminalReport } from '../reporter/terminal.js';
 import { writeJsonReport } from '../reporter/json.js';
 import { writeJunitReport } from '../reporter/junit.js';
+
+async function loadConfig(configPath: string): Promise<SeoConfig> {
+  const absolutePath = resolve(process.cwd(), configPath);
+  const jiti = createJiti(__filename);
+  return jiti.import<SeoConfig>(absolutePath, { default: true });
+}
+
+function executionFailure(url: string, error: unknown): TestResult<string, { reachable: true }> {
+  const message = error instanceof Error ? error.message : String(error);
+
+  return {
+    ruleId: 'execution',
+    status: 'fail',
+    severity: 'error',
+    actual: message,
+    expected: { reachable: true },
+    message: `Unable to analyze ${url}: ${message}`,
+    context: 'static',
+    url,
+  };
+}
 
 const cli = cac('seo-test');
 
@@ -31,10 +54,7 @@ cli
 
     let config: SeoConfig;
     try {
-      const absolutePath = resolve(process.cwd(), configPath);
-      const fileUrl = pathToFileURL(absolutePath).href;
-      const mod = await import(fileUrl) as { default?: SeoConfig };
-      config = mod.default ?? (mod as unknown as SeoConfig);
+      config = await loadConfig(configPath);
     } catch (err) {
       console.error(pc.red(`Failed to load config: ${configPath}`));
       console.error(err);
@@ -49,7 +69,7 @@ cli
     let urls: string[];
 
     if (options.url) {
-      urls = [options.url];
+      urls = [new URL(options.url, config.baseUrl).href];
     } else {
       try {
         console.log(pc.dim('Discovering URLs...'));
@@ -62,16 +82,46 @@ cli
     }
 
     const resultsByUrl = new Map<string, TestResult[]>();
+    let browser: Browser | undefined;
 
-    for (const url of urls) {
-      console.log(pc.dim(`  Testing ${url}...`));
-      try {
-        const results = await fetchAndAnalyze(url, config);
-        resultsByUrl.set(url, results);
-      } catch (err) {
-        console.error(pc.red(`  Failed to test ${url}:`), err);
-        resultsByUrl.set(url, []);
+    try {
+      for (const url of urls) {
+        console.log(pc.dim(`  Testing ${url}...`));
+
+        try {
+          const pageConfig = resolvePageConfig(
+            resolved,
+            new URL(url, resolved.baseUrl).pathname
+          );
+
+          if (pageConfig?.mode === 'full') {
+            if (!browser) {
+              const { chromium } = await import('@playwright/test');
+              browser = await chromium.launch();
+            }
+
+            const page = await browser.newPage();
+            try {
+              const fullModeOptions = pageConfig.waitFor
+                ? { waitFor: pageConfig.waitFor }
+                : {};
+              resultsByUrl.set(
+                url,
+                await runFullMode(page, url, config, fullModeOptions)
+              );
+            } finally {
+              await page.close();
+            }
+          } else {
+            resultsByUrl.set(url, await fetchAndAnalyze(url, config));
+          }
+        } catch (err) {
+          console.error(pc.red(`  Failed to test ${url}:`), err);
+          resultsByUrl.set(url, [executionFailure(url, err)]);
+        }
       }
+    } finally {
+      await browser?.close();
     }
 
     const summary = buildSummary(resultsByUrl, Date.now() - start);
@@ -91,12 +141,12 @@ cli
         }
     }
 
-    // Exit with non-zero code if any errors found
+    // Exit with non-zero code only for error-severity violations.
     if (summary.failed > 0) {
       process.exit(1);
     }
   });
 
 cli.help();
-cli.version('0.1.0');
+cli.version('0.1.1');
 cli.parse();

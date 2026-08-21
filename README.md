@@ -5,7 +5,7 @@
 [![npm version](https://badge.fury.io/js/@seo-guardian%2Fcore.svg)](https://www.npmjs.com/package/@seo-guardian/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**seo-guardian** enforces SEO requirements as automated tests that run in your CI/CD pipeline — blocking deploys the moment an SEO rule is violated.
+**seo-guardian** enforces SEO requirements as automated tests that run in your CI/CD pipeline. Rules configured with `severity: 'error'` block deployment when they fail; `warning` and `info` keep results report-only.
 
 [日本語ドキュメントはこちら](./README.ja.md)
 
@@ -24,7 +24,7 @@
 | SPA support | — | **Full Mode with `waitFor` strategies** |
 | Broken link checking | — | **Built-in with concurrency control** |
 
-Lighthouse is a diagnostic tool (health check). seo-guardian is a **guardrail** — it blocks the deploy.
+Lighthouse is a diagnostic tool (health check). seo-guardian is a **guardrail** — error-severity violations block the deploy.
 
 ---
 
@@ -230,12 +230,12 @@ Priority: **page rules > global rules > defaults**
 
 ## Implementation Status
 
-| Phase | Rules | Unit Tests |
+| Phase | Rules | Coverage |
 |---|---|---|
-| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | 98 |
-| v1.1 | structured-data (3-level), hreflang, robots-txt, x-robots-tag | 51 |
-| v1.2 | broken-links, redirect-chain | 26 |
-| **Total** | **12 rules / 14 config keys** | **175 (all passing)** |
+| MVP | title-length, description-length, h1-single, lang, canonical, noindex, og-required, img-alt | Rule unit tests |
+| v1.1 | structured-data (3-level), hreflang, robots-txt, x-robots-tag | Rule unit tests |
+| v1.2 | broken-links, redirect-chain | Rule unit tests |
+| **Total** | **14 configured and engine-registered rules** | **Unit tests plus CLI config → engine → reporter → exit-code integration coverage** |
 
 ---
 
@@ -253,3 +253,4 @@ Priority: **page rules > global rules > defaults**
 ## License
 
 MIT © [QAmamomamo](https://github.com/qa-marmot)
+

@@ -96,7 +96,7 @@ CI/CD Pipeline
     └─ Full Mode: Playwright + waitFor   (when mode: 'full')
          │
          ▼
-    Rule Engine (12 rules)
+    Rule Engine (14 rules)
     ├─ MVP:  title / description / h1 / canonical / noindex / lang / og-required / img-alt
     ├─ v1.1: structured-data / hreflang / robots-txt / x-robots-tag
     └─ v1.2: broken-links / redirect-chain

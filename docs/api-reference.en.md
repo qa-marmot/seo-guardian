@@ -46,6 +46,19 @@ function resolveConfig(config: SeoConfig): Required<SeoConfig>
 
 ---
 
+### `resolvePageConfig(config, pagePath)`
+
+Returns the matching page configuration, including its execution mode and
+`waitFor` strategy. The CLI uses this resolver before selecting Fast or Full
+Mode.
+
+```typescript
+const page = resolvePageConfig(resolvedConfig, '/app/dashboard');
+// { path: '/app/**', mode: 'full', waitFor: { type: 'networkidle' } }
+```
+
+---
+
 ### `resolvePageRules(config, pagePath)`
 
 Resolves the rules that apply to a specific page path (including page-level overrides).
@@ -420,6 +433,22 @@ result.actual;  // { headerValue: string | null; directives: string[] }
 
 ---
 
+### `checkRobotsTxt(baseUrl, input)`
+
+Async. Fetches the site's `/robots.txt` and checks that it is reachable and
+does not unintentionally block crawling.
+
+```typescript
+import { checkRobotsTxt } from '@seo-guardian/core';
+
+const result = await checkRobotsTxt(
+  'https://example.com',
+  { url: 'https://example.com/', context: 'static' }
+);
+```
+
+---
+
 ### `checkBrokenLinks(input, options?)`
 
 Async. Requires network access.
@@ -496,6 +525,21 @@ Shortcut that fetches a URL and runs Fast Mode.
 import { fetchAndAnalyze } from '@seo-guardian/core';
 
 const results = await fetchAndAnalyze('https://example.com/', config);
+```
+
+---
+
+### `runFullMode(page, url, config, options?)`
+
+Runs the same rule engine against Playwright's rendered DOM. The CLI selects
+this mode for matching pages configured with `mode: 'full'`.
+
+```typescript
+import { runFullMode } from '@seo-guardian/core';
+
+const results = await runFullMode(page, 'https://example.com/app', myConfig, {
+  waitFor: { type: 'networkidle' },
+});
 ```
 
 ---

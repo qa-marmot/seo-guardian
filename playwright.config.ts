@@ -20,12 +20,10 @@ export default defineConfig({
       testMatch: '**/*.test.ts',
     },
     {
-      name: 'e2e',
-      testDir: './tests/e2e',
+      name: 'integration',
+      testDir: './tests/integration',
       testMatch: '**/*.spec.ts',
-      use: {
-        baseURL: process.env['BASE_URL'] ?? 'http://localhost:3000',
-      },
     },
   ],
 });
+

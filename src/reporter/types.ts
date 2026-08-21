@@ -28,8 +28,8 @@ export function buildSummary(
     for (const r of pageResults) {
       total++;
       if (r.status === 'pass') passed++;
-      else if (r.status === 'fail') failed++;
-      else if (r.status === 'warn') warned++;
+      else if (r.status === 'fail' && r.severity === 'error') failed++;
+      else warned++;
     }
   }
 

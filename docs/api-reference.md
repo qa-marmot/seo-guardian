@@ -46,6 +46,18 @@ function resolveConfig(config: SeoConfig): Required<SeoConfig>
 
 ---
 
+### `resolvePageConfig(config, pagePath)`
+
+実行モードと `waitFor` 戦略を含む、マッチしたページ設定を返します。CLIは
+Fast Mode / Full Mode を選択する前にこの関数を使います。
+
+```typescript
+const page = resolvePageConfig(resolvedConfig, '/app/dashboard');
+// { path: '/app/**', mode: 'full', waitFor: { type: 'networkidle' } }
+```
+
+---
+
 ### `resolvePageRules(config, pagePath)`
 
 特定のページパスに適用されるルールを解決します（ページ別オーバーライドを反映）。
@@ -422,6 +434,22 @@ result.actual;  // { headerValue: string | null; directives: string[] }
 
 ---
 
+### `checkRobotsTxt(baseUrl, input)`
+
+非同期。サイトの `/robots.txt` を取得し、到達可能か・意図せずクロールを
+ブロックしていないかを検証します。
+
+```typescript
+import { checkRobotsTxt } from '@seo-guardian/core';
+
+const result = await checkRobotsTxt(
+  'https://example.com',
+  { url: 'https://example.com/', context: 'static' }
+);
+```
+
+---
+
 ### `checkBrokenLinks(input, options?)`
 
 非同期。ネットワークアクセスあり。
@@ -498,6 +526,21 @@ URLをフェッチしてFast Modeを実行するショートカット。
 import { fetchAndAnalyze } from '@seo-guardian/core';
 
 const results = await fetchAndAnalyze('https://example.com/', config);
+```
+
+---
+
+### `runFullMode(page, url, config, options?)`
+
+Playwrightで描画された DOM に対して同じルールエンジンを実行します。CLIは
+`mode: 'full'` に一致するページでこのモードを選択します。
+
+```typescript
+import { runFullMode } from '@seo-guardian/core';
+
+const results = await runFullMode(page, 'https://example.com/app', myConfig, {
+  waitFor: { type: 'networkidle' },
+});
 ```
 
 ---
